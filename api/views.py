@@ -7,31 +7,45 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from django.contrib.auth import login,logout
+from rest_framework import status
+from django.core.mail import send_mail
+from django.conf import settings
 
+from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+class Home(LoginRequiredMixin, TemplateView):
+    template_name = 'home.html'
 
 
 class UserRegistration(generics.CreateAPIView):
     serializer_class = RegisterSerializer
 
     def create(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        if email and CustomUser.objects.filter(email=email).exists():
+            return Response("User with the same email already exists. Please Login", status=status.HTTP_400_BAD_REQUEST)
+        
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = self.perform_create(serializer)
-        if user:
-            return Response("Account Successfully Created",status=201)
-        return Response("Something Wrong",status=400)
+        self.perform_create(serializer)
+        return Response("Account Successfully Created", status=status.HTTP_201_CREATED)
 
     def perform_create(self, serializer):
         user = serializer.save()
-        user.save()
         return user
 
 class LoginVerify(generics.CreateAPIView):
     serializer_class = LoginSerializer   
-    def post(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return redirect(reverse('Home'))
-        
+    # def get(self, request, *args, **kwargs):
+    #     if request.user.is_authenticated:
+    #         data = {
+    #             'Username' :request.user.username,
+    #             'is_authenticated': True
+    #         }
+    #         return Response(data, status=status.HTTP_200_OK)
+    
+    def post(self, request, *args, **kwargs):       
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -40,18 +54,23 @@ class LoginVerify(generics.CreateAPIView):
         try:
             user = authenticate(request, email=email, otp=otp)
             if user: 
-                login(request, user)              
-                return redirect(reverse('home'))
-            return Response('Invalid OTP',status=400)
+                login(request, user)     
+                return Response('OTP Validated',status=status.HTTP_200_OK)
+            return Response('Invalid OTP',status=status.HTTP_401_UNAUTHORIZED)
         except Exception as ex:
             return Response("Something Wrong",status=400)
 
-class Home(generics.ListAPIView):
-    permission_classes =  [permissions.IsAuthenticated]
+# class Home(generics.ListAPIView):
+#     permission_classes =  [permissions.IsAuthenticated]
+#     def get(self, request, *args, **kwargs):
+#         user = request.user   
+#         data = {
+#             'message': f'Welcome {user}',
+#         }     
+#         return Response(data)
 
-    def get(self, request, *args, **kwargs):
-        user = request.user        
-        return Response(f'Welcome {user}')
+class Home(LoginRequiredMixin, TemplateView):
+    template_name = 'home.html'
 
 class Logout(generics.ListAPIView):
 
@@ -62,17 +81,27 @@ class Logout(generics.ListAPIView):
             
 class GenertateOTP(generics.CreateAPIView):
     serializer_class = OTPGenerate
-
     def create(self, request, *args, **kwargs):
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = request.data.get('email')
         try :
             user = self.serializer_class.Meta.model.objects.get(email=email)
+            if not user:
+                return Response("User Don't Exist")
             otp = pyotp.TOTP(pyotp.random_base32(), digits=6).now()
             user.otp = otp
-            #mail the otp to user
+            # self.sendMail(email,otp)
             user.save()
-            return Response('OTP has been Emailed Please Check')            
+            return Response(f'OTP has been Emailed on {email} Please Check.')            
         except Exception as ex:
-            return Response("User Don't Exist")
+            print(ex)
+            return Response("Something Wrong.....")
+
+    def sendMail(self,email,otp):
+        subject = 'OTP Verfication'
+        message = f'Heya Your OTP is {otp} Please Login Using OTP.'
+        from_email = settings.EMAIL_HOST_USER
+        recipient_list = [email]
+        send_mail(subject, message, from_email, recipient_list)

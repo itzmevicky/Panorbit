@@ -29,15 +29,16 @@ class UserProfileManager(BaseUserManager):
 class CustomUser(AbstractUser):
     class Meta:
         db_table = "custom_user"
+
     # Additional fields for UserProfile
-    GENDER_CHOICE = (
-        ('M','MALE'),
-        ('F','FEMALE'),
-        ('O','OTHER')
-        )
+    GENDER_CHOICES = (
+        ('MALE', 'MALE'),
+        ('FEMALE', 'FEMALE'),
+        ('OTHER', 'OTHER')
+    )
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    gender = models.CharField(choices=GENDER_CHOICE,max_length=1)
+    gender = models.CharField(choices=GENDER_CHOICES, max_length=10)
     email = models.EmailField(primary_key=True)
     phone = models.CharField(max_length=10)
     otp = models.CharField(max_length=6)
@@ -45,7 +46,13 @@ class CustomUser(AbstractUser):
     is_superuser = models.BooleanField(default=False)
     objects = UserProfileManager()
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name','last_name','gender','phone']
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'gender', 'phone']
+
+    def save(self, *args, **kwargs):
+        # Set the username to be the same as the email
+        self.username = self.email
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.first_name
+

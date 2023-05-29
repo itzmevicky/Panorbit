@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+        
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.form-container {
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.form-container input {
+    width: 300px;
+    height: 30px;
+    padding: 5px;
+    margin-bottom: 10px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    outline: none;
+    font-family: 'Roboto', sans-serif;
+    transition: box-shadow 0.3s ease;
+}
+
+.form-container input[type="text"]:focus,
+.form-container input[type="email"]:focus,
+.form-container input[type="tel"]:focus {
+    box-shadow: 0 0 10px #a0d8b3;
+}
+
+.form-container select {
+    width: 300px;
+    height: 30px;
+    padding: 5px;
+    margin-bottom: 10px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    outline: none;
+    font-family: 'Roboto', sans-serif;
+}
+
+.form-container input[type="submit"] {
+    width: 150px;
+    height: 40px;
+    background-color: #f2f2f2;
+    color: #333;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+}
+
+.form-container input[type="submit"]:hover {
+    background-color: #d8f0e6;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.form-container h1 {
+    color:#A0D8B3;
+    font-weight: bold;
+}

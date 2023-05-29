@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="static/home.css">
+</head>
+<body>
+    <div class="navbar">
+        <img class="logo" src="./image/logo.png" alt="Company Logo" width="30" height="30">
+        <h1 class="company-name">Panorbit</h1>
+        <div class="nav-buttons">
+            <span id="welcome-msg"></span>
+            <button id="login-btn">Login</button>
+        </div>
+    </div>
+
+    <script>
+        // Fetch user information from the API
+        fetch('http://localhost:8000/home/', {
+            method: 'GET',
+            // headers: {
+            //     'Authorization': 'Bearer <your_access_token>'
+            // }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.is_authenticated) {
+                // User is authenticated
+                document.getElementById('welcome-msg').textContent = 'Welcome, ' + data.username;
+                document.getElementById('login-btn').textContent = 'Logout';
+            } else {
+                // User is not authenticated
+                document.getElementById('welcome-msg').textContent = '';
+                document.getElementById('login-btn').textContent = 'Login';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Something went wrong');
+        });
+
+        // TODO: Add event listener and logic to handle login/logout functionality
+    </script>
+</body>
+</html>

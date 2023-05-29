@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration-PanOrbit</title>
+    <link rel="stylesheet" type="text/css" href="static/register.css">
+  
+
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1>Create User</h1>
+            
+            <form id="user-form" method="post">
+                <input type="text" id="first-name" name="first_name" required placeholder="First Name"><br>
+                <input type="text" id="last-name" name="last_name" required placeholder="Last Name"><br>
+                <select id="gender" name="gender" required>
+                    <option value="" disabled selected>Select Gender</option>
+                    <option value="MALE">MALE</option>
+                    <option value="FEMALE">FEMALE</option>
+                    <option value="OTHER">OTHER</option>
+                </select><br>
+                <input type="email" id="email" name="email" required placeholder="Email ID"><br>
+                <input type="tel" id="phone" name="phone" required placeholder="Phone Number"><br>
+                <input type="submit" id="submit-button" value="Register" onclick="submitForm(event)">
+            </form>
+        </div>
+    </div>
+
+
+
+    <script>
+        function submitForm(event) {
+            event.preventDefault();
+    
+            var formData = {
+                first_name: document.getElementById('first-name').value,
+                last_name: document.getElementById('last-name').value,
+                gender: document.getElementById('gender').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value
+            };
+    
+            fetch('http://localhost:8000/register/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.message === 'Account Successfully Created') {
+                    alert(data);
+                      // Use forward slash (/) instead of backslash (\)
+                } else {
+                    alert(data);
+                }
+                window.location.href = './login.html';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Something went wrong');
+            });
+        }
+    </script>
+    
+</body>
+</html>

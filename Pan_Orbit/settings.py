@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'api'
+    'api',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -49,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -127,6 +129,8 @@ STATIC_URL = 'static/'
 
 AUTH_USER_MODEL = 'api.CustomUser'
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -146,3 +150,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mepillai98@gmail.com'  # Replace with your Gmail address
 EMAIL_HOST_PASSWORD = 'Pillai@890'  # Replace with your Gmail password or app-specific password
 
+LOGIN_URL = '/login/'

@@ -6,7 +6,7 @@ class OTPAuthenticationBackend(BaseBackend):
         User = get_user_model()
         try:
             user = User.objects.get(email=email)
-            if user.otp == otp:  
+            if user.otp == otp: 
                 return user
         except User.DoesNotExist:
             return None

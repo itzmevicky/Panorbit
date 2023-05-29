@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - PanOrbit</title>
+    <link rel="stylesheet" type="text/css" href="static/login.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1>Login</h1>
+            <form id="login-form" method="post">
+                <input type="email" id="email" name="email" required placeholder="Email"><br>
+                <input type="text" id="otp" name="otp" placeholder="OTP"><br>
+                <input type="submit" value="Get OTP" onclick="getOTP()">
+                <input type="submit" value="Login" onclick="submitLogin(event)">
+            </form>
+        </div>
+    </div>
+    <script>
+    function getOTP() {
+        event.preventDefault();
+        var email = document.getElementById('email').value;               
+
+        fetch('http://127.0.0.1:8000/genOTP/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Something went wrong');
+        });
+    }
+
+    function submitLogin(event) {
+        event.preventDefault();
+
+        var email = document.getElementById('email').value;
+        var otp = document.getElementById('otp').value;
+
+        fetch('http://127.0.0.1:8000/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email, otp: otp })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data);
+            window.location.href = './home.html'
+            // Handle successful login response
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Something went wrong');
+        });
+    }
+    </script>
+</body>
+</html>
