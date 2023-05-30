@@ -11,11 +11,8 @@ from rest_framework import status
 from django.core.mail import send_mail
 from django.conf import settings
 
-from django.views.generic import TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin
 
-class Home(LoginRequiredMixin, TemplateView):
-    template_name = 'home.html'
+
 
 
 class UserRegistration(generics.CreateAPIView):
@@ -36,15 +33,7 @@ class UserRegistration(generics.CreateAPIView):
         return user
 
 class LoginVerify(generics.CreateAPIView):
-    serializer_class = LoginSerializer   
-    # def get(self, request, *args, **kwargs):
-    #     if request.user.is_authenticated:
-    #         data = {
-    #             'Username' :request.user.username,
-    #             'is_authenticated': True
-    #         }
-    #         return Response(data, status=status.HTTP_200_OK)
-    
+    serializer_class = LoginSerializer      
     def post(self, request, *args, **kwargs):       
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -60,14 +49,14 @@ class LoginVerify(generics.CreateAPIView):
         except Exception as ex:
             return Response("Something Wrong",status=400)
 
-# class Home(generics.ListAPIView):
-#     permission_classes =  [permissions.IsAuthenticated]
-#     def get(self, request, *args, **kwargs):
-#         user = request.user   
-#         data = {
-#             'message': f'Welcome {user}',
-#         }     
-#         return Response(data)
+class Home(generics.ListAPIView):
+    permission_classes =  [permissions.IsAuthenticated]
+    def get(self, request, *args, **kwargs):
+        user = request.user   
+        data = {
+            'message': f'Welcome {user}',
+        }     
+        return Response(data)
 
 class Home(LoginRequiredMixin, TemplateView):
     template_name = 'home.html'
@@ -92,7 +81,7 @@ class GenertateOTP(generics.CreateAPIView):
                 return Response("User Don't Exist")
             otp = pyotp.TOTP(pyotp.random_base32(), digits=6).now()
             user.otp = otp
-            # self.sendMail(email,otp)
+            self.sendMail(email,otp)
             user.save()
             return Response(f'OTP has been Emailed on {email} Please Check.')            
         except Exception as ex:
